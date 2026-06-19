@@ -6,6 +6,7 @@ import com.viniciuslima.workshopmongo.services.exception.ObjectNotFoundException
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,15 +14,21 @@ import java.util.Optional;
 public class PostService {
 
     @Autowired
-    private PostRepository Repo;
+    private PostRepository repo;
 
     public Post findById(String id) {
-        Optional<Post> post = Repo.findById(id);
+        Optional<Post> post = repo.findById(id);
 
         return post.orElseThrow(() -> new ObjectNotFoundException("Post not found"));
     }
 
     public List<Post> findByTitle(String text) {
-        return Repo.searchTitle(text);
+        return repo.searchTitle(text);
+    }
+
+    public List<Post> fullSearch(String text, Date minDate, Date maxDate) {
+        // Soma 24h para incluir posts até o final do dia da data máxima
+        maxDate = new Date(maxDate.getTime() + 24 * 60 * 60 * 1000);
+        return repo.fullSearch(text, minDate, maxDate);
     }
 }
